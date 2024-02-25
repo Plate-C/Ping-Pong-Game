@@ -1,0 +1,193 @@
+//Variable declarations
+float P1X = 5; //x coordinate for player one paddle
+float P1Y = 175; //y coordinate for player one paddle
+float P2X = 610; //x coordinate for player two paddle
+float P2Y = 175; //y coordinate for player two paddle
+
+float cX = 320; //x coordinate for the center of the ping pong ball
+float cY = 240; //y coordinate for the center of the png pong ball
+float vX = 5.5; //velocity for x of ping pong ball
+float vY = 5.5; //velocity for y of ping pong ball
+float d = 40; //diameter of ping pong ball
+float r = d/2; //radius of ping pong ball
+
+PImage ball; //ping pong ball
+PImage table; //tennis table (background) 
+
+color red = color(255,51,51); //RGB color red
+color blue = color(102,178,255); //RGB color blue 
+color black = color(0); //RGB color black
+color white = color(255); //RGB color white
+
+int PointsP1 = 0; //Points for Player 1
+int PointsP2 = 0; // Points for Player 2
+int stage = 1; //number of stages
+
+
+//Setup of canvas and background
+void setup(){
+  table = loadImage("table.jpg");
+  size(640,480); //size of canvas
+}
+
+//setup of entire game
+void draw(){
+  /*stage 1 = Game Screen
+    stage 2 = Winning Screen For Player 1
+    stage 3 = Winning Screen For Player 2
+    stage 4 = Resetting Score, and position of every sprite in the game before pressing p on your keyboard to play again*/
+  
+  if(stage == 1){
+  image(table,0,0,640,480);
+  //Player 1 (red) paddle
+  fill(red);
+  stroke(black);
+  strokeWeight(2);
+  rect(P1X,P1Y,25,110);
+  //Player 2 (blue) paddle
+  fill(blue);
+  rect(P2X,P2Y,25,110);
+  //Ping pong ball
+  fill(white);
+  ellipse(cX,cY,d,d);
+  cX = cX + vX; //velocity for x (center of ping pong ball)
+  cY = cY + vY; //velocity for y (center of ping pong ball)
+  textSize(40);
+  text(PointsP1,265,475);
+  text(PointsP2,360,475);
+  stroke(white);
+  line(312,465,332,465);
+  
+  //Points for Player 1
+  if(cX>640-r){ //If ball hits the right side of the screen
+    PointsP1 = PointsP1 + 1;
+  }
+  
+  if(cX<r){ //If ball hits the left side of the screen
+    PointsP2 = PointsP2 + 1;
+  }
+  
+  if(PointsP1 == 11){ //if Player 1 gets 11 points, you get directed to the Player 1 winning screen
+    stage = 2;
+  }
+  if(PointsP2 == 11){ //if Player 2 gets 11 points, you get directed to the Player 2 winning screen
+    stage = 3;
+  }
+ 
+//Bouncing from the top:  
+if(cY<r){ 
+vY=-vY;
+}
+//Bouncing from bottom:
+if(cY>480-r){ 
+vY=-vY;
+}
+//Bouncing from the left edge
+if(cX<r){
+vX=-vX;
+}
+//Bouncing from the right edge
+if(cX>640-r){
+vX=-vX;
+}
+
+//Collison between ball and red paddle
+if(cX>P1X && cX-r<P1X+25 && cY>P1Y && cY<P1Y+110){ //collides with red paddle and bounces off to the opposite direction
+  vX = -vX;
+  vY = +vY;
+}
+//Collision between ball and blue paddle
+if(cX>P2X-23 && cY>P2Y && cY<P2Y+110){ //collides with blue paddle and bounces off to the opposite direction
+  vX = -vX;
+  vY = +vY;
+}
+
+ 
+//Retrictions for paddle 1 (unable to leave screen through top and bottom
+if(P1Y+110>480){ //stops paddle 1 from leaving the screen through the bottom
+   P1Y = P1Y - 10;
+}
+if(P1Y<0){ //stops paddle 1 from leaving the screen through the yop
+   P1Y = P1Y + 10;
+}
+//Retrictions for paddle 2 (unable to leave screen through top and bottom
+if(P2Y+110>480){ //stops paddle 2 from leaving the screen through the bottom
+   P2Y = P2Y - 10;
+}
+if(P2Y<0){ //stops paddle 2 from leaving the screen through the top
+   P2Y = P2Y + 10;
+}
+  }//Finish stage 1
+  
+  if(stage == 2){ //stage 2 (Player One winning screen)
+    image(table,0,0,640,480);
+    //Winning Text for Player 1
+    fill(black);
+    rect(177,190,300,100);
+    fill(white);
+    textSize(40);
+    text("Player One Wins!",190,250);
+    //Text or intructions on how to resart the game to play again
+    fill(black);
+    rect(43,305,555,35);
+    textSize(25);
+    fill(white);
+    text("To Play The Game Again, Press 'p' On Your Keyboard.", 50,330);
+    if(keyPressed == true){ //to check if a key on a keyboard has been pressed
+      if(key == 'p'){
+        stage = 4;
+      } //finish if key pressed is 'p'
+    } //finish keyPressed()
+  } //finish stage 2
+
+  if(stage == 3){ //stage 2 (Player Two winning screen)
+    image(table,0,0,640,480);
+    fill(black);
+    //Winning Text for Player 2
+    rect(177,190,300,100);
+    fill(white);
+    textSize(40);
+    text("Player Two Wins!",190,250);
+    //Text or intructions on how to resart the game to play again
+    fill(black);
+    rect(43,305,555,35);
+    textSize(25);
+    fill(white);
+    text("To Play The Game Again, Press 'p' On Your Keyboard.", 50,330);
+    if(keyPressed == true){ //to check if a key on a keyboard has been pressed
+      if(key == 'p'){ 
+        stage = 4; 
+      } //finish if key pressed is 'p'
+    } //finish keyPressed()
+  } //finish stage 3
+  
+  if(stage == 4){ //rests all sprites into their own initial characteristics after pressing 'p' on your keyboard
+    stage = 1;
+    P1X = 10; 
+    P1Y = 175;
+    P2X = 605; 
+    cY = 240;
+    cX = 320; 
+    vX = 5;
+    vY = 5;
+    d = 40; 
+    r = d/2; 
+    PointsP1 = 0;
+    PointsP2 = 0;
+  }   //finish stage 4
+} //finish draw()
+
+void keyPressed() { //movement for two paddles
+  if(key == 'w') { //Paddle 1 (upward movement)
+    P1Y=P1Y-10;
+  }
+  if(key == 's') { //Paddle 1 (downward movement)
+    P1Y=P1Y+10;
+  }
+  if(key == CODED && (keyCode == UP)) { //Paddle 2 (upward movement)
+    P2Y=P2Y-10;
+  }
+  if(key == CODED && (keyCode == DOWN)) { //Paddle 2 (downward movement)
+    P2Y=P2Y+10;
+  }
+}//end keyPressed()
